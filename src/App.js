@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Routes, Route, Navigate, Link } from 'react-router-dom';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import { ROLES } from './utils/constants';
+import Login from './components/Auth/Login';
+import AdminDashboard from './components/Admin/Dashboard';
+import Assets from './components/Admin/Assets';
+import EmployeeDashboard from './components/Employee/Dashboard';
+import Topbar from './components/Navbar/Topbar';
 
-function App() {
+export default function App(){
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {/* show Topbar on every route except /login */}
+      {window.location.pathname !== '/login' && <Topbar />}
+
+      <Routes>
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/admin" element={
+          <ProtectedRoute roles={[ROLES.Admin]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/assets" element={
+          <ProtectedRoute roles={[ROLES.Admin]}>
+            <Assets />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/employee" element={
+          <ProtectedRoute roles={[ROLES.Employee, ROLES.Admin]}>
+            <EmployeeDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
-
-export default App;
