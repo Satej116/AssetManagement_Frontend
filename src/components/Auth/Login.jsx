@@ -11,16 +11,16 @@ const schema = Yup.object({
   password: Yup.string().required('Required')
 });
 
-export default function Login(){
+export default function Login() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // if already logged in, redirect by role
+    // If already logged in, redirect immediately
     const t = getToken();
     if (t) {
       const u = parseUser(t);
       if (u?.role === 'Admin') window.location.href = '/admin';
-      else if (u?.role) window.location.href = '/employee';
+      else if (u?.role === 'Employee') window.location.href = '/employee';
     }
   }, []);
 
@@ -28,16 +28,27 @@ export default function Login(){
     setError(null);
     try {
       const data = await AuthService.login(values.username, values.password);
+
+      // token might come as {token}, {accessToken}, or raw string
       const jwt = data?.token || data?.accessToken || (typeof data === 'string' ? data : null);
       if (!jwt) throw new Error('Token missing in response');
+
+      // save token
       setToken(jwt);
       setupAuthInterceptor(() => setToken(null));
+
+      // decode user
       const u = parseUser(jwt);
+
+      // redirect by role
       if (u?.role === 'Admin') window.location.href = '/admin';
-      else window.location.href = '/employee';
+      else if (u?.role === 'Employee') window.location.href = '/employee';
+      else window.location.href = '/login'; // fallback
     } catch (e) {
       setError(e?.response?.data?.message || e.message || 'Login failed');
-    } finally { setSubmitting(false); }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

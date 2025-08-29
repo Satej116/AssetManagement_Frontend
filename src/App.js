@@ -1,42 +1,62 @@
-import React from 'react';
-import { Routes, Route, Navigate, Link } from 'react-router-dom';
-import ProtectedRoute from './components/common/ProtectedRoute';
-import { ROLES } from './utils/constants';
-import Login from './components/Auth/Login';
-import AdminDashboard from './components/Admin/Dashboard';
-import Assets from './components/Admin/Assets';
-import EmployeeDashboard from './components/Employee/Dashboard';
-import Topbar from './components/Navbar/Topbar';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Topbar from "./components/Navbar/Topbar";
+import Dashboard from "./components/Admin/Dashboard";
+import Assets from "./components/Admin/Assets";
+import Allocations from "./components/Admin/Allocations";
+import ServiceRequests from "./components/Admin/ServiceRequests";
+import AuditRequests from "./components/Admin/AuditRequests";
+import AdminLogs from "./components/Admin/AdminLogs";
+import Employees from "./components/Admin/Employees";
+import Profile from "./components/Admin/Profile";
+import Settings from "./components/Admin/Settings";
+import Login from "./components/Auth/Login";
 
-export default function App(){
+// Employee components
+import EmployeeDashboard from "./components/Employee/Dashboard";
+import MyAssets from "./components/Employee/MyAssets";
+
+import { parseUser, getToken } from "./utils/tokenHelper";
+
+function App() {
+  const token = getToken();
+  const user = token ? parseUser(token) : null;
+  const isLoggedIn = !!token;
+
   return (
     <>
-      {/* show Topbar on every route except /login */}
-      {window.location.pathname !== '/login' && <Topbar />}
-
+      {isLoggedIn && <Topbar />}
       <Routes>
-        <Route path="/login" element={<Login />} />
-
-        <Route path="/admin" element={
-          <ProtectedRoute roles={[ROLES.Admin]}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/assets" element={
-          <ProtectedRoute roles={[ROLES.Admin]}>
-            <Assets />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/employee" element={
-          <ProtectedRoute roles={[ROLES.Employee, ROLES.Admin]}>
-            <EmployeeDashboard />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {!isLoggedIn ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        ) : user?.role === "Admin" ? (
+          <>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/employees" element={<Employees />} />
+            <Route path="/admin/Assets" element={<Assets />} />
+            <Route path="/admin/allocations" element={<Allocations />} />
+            <Route path="/admin/service-requests" element={<ServiceRequests />} />
+            <Route path="/admin/audit-requests" element={<AuditRequests />} />
+            <Route path="/admin/admin-logs" element={<AdminLogs />} />
+            <Route path="/admin/profile" element={<Profile />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/admin" />} />
+          </>
+        ) : (
+          <>
+            {/* Employee Routes */}
+            <Route path="/employee" element={<EmployeeDashboard />} />
+            <Route path="/employee/my-assets" element={<MyAssets />} />
+            <Route path="*" element={<Navigate to="/employee" />} />
+          </>
+        )}
       </Routes>
     </>
   );
 }
+
+export default App;

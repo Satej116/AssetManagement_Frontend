@@ -1,0 +1,103 @@
+/* Layout grid */
+.am-layout {
+  min-height: 100vh;
+  background: #f7f9fc;
+}
+
+.am-body {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+/* Sidebar container */
+.am-sidebar-wrap {
+  background: #fff;
+  border-right: 1px solid rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 56px); /* 56px ~= default Bootstrap navbar height */
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+/* Toggle button (mobile) */
+.am-toggle {
+  margin: 0.5rem;
+}
+
+/* Sidebar itself */
+.am-sidebar {
+  overflow-y: auto;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+}
+
+.am-sidebar.collapsed .am-text {
+  display: none;
+}
+.am-sidebar.collapsed .am-ic {
+  margin-right: 0 !important;
+}
+
+/* Links */
+.am-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: .55rem .75rem;
+  margin: .15rem 0;
+  border-radius: .5rem;
+  color: #344054;
+  text-decoration: none;
+}
+
+.am-link:hover {
+  background: #f2f4f7;
+  text-decoration: none;
+}
+
+.am-link.active {
+  background: #e6f0ff;
+  color: #155eef;
+  font-weight: 600;
+}
+
+/* Section label */
+.am-section {
+  font-size: 0.75rem;
+  letter-spacing: .04em;
+  color: #98a2b3;
+  text-transform: uppercase;
+  margin: .9rem .5rem .25rem;
+}
+
+/* Icons */
+.am-ic {
+  font-size: 1.25rem;
+  margin-right: 6px;
+}
+
+/* Content area */
+.am-content {
+  padding: 1rem;
+}
+
+/* Collapse behavior */
+.am-collapsed .am-body {
+  grid-template-columns: 78px 1fr; /* icon-only rail */
+}
+
+@media (max-width: 992px) {
+  .am-body {
+    grid-template-columns: 1fr;
+  }
+.am-sidebar-holder {
+  display: block; /* default for now */
+}
+
+  .am-sidebar-wrap {
+    position: static;
+    height: auto;
+  }
+}

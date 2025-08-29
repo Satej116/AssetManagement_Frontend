@@ -1,21 +1,54 @@
+// src/components/Navbar/Topbar.js
 import React from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
-import { clearToken, parseUser, getToken } from '../../utils/tokenHelper';
+import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Topbar() {
-  const user = parseUser(getToken());
-  const onLogout = () => { clearToken(); window.location.href = '/login'; };
+  const navigate = useNavigate();
+  const adminName = localStorage.getItem("adminName") || "Admin";
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("adminName");
+  // reload whole app to reset App.js logic
+  window.location.href = "/login";
+};
+
 
   return (
-    <Navbar bg="light" expand="lg" className="mb-3">
+    <Navbar bg="dark" variant="dark" expand="lg" className="shadow-sm">
       <Container fluid>
-        <Navbar.Brand>Asset Management</Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          <Nav>
-            <Nav.Link disabled>{user?.username ?? ''} ({user?.role ?? ''})</Nav.Link>
-            <Nav.Link onClick={onLogout}>Logout</Nav.Link>
+        {/* Brand */}
+        <Navbar.Brand as={Link} to="/admin">
+          Asset Management
+        </Navbar.Brand>
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          {/* Left Nav Links */}
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/admin">Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/admin/employees">Employees</Nav.Link>
+            <Nav.Link as={Link} to="/admin/assets">Assets</Nav.Link>
+            <Nav.Link as={Link} to="/admin/allocations">Allocations</Nav.Link>
+            <Nav.Link as={Link} to="/admin/service-requests">Service Requests</Nav.Link>
+            <Nav.Link as={Link} to="/admin/audit-requests">Audit Requests</Nav.Link>
+            <Nav.Link as={Link} to="/admin/admin-logs">Admin Logs</Nav.Link>
           </Nav>
+
+          {/* Right Side Profile */}
+          <Dropdown align="end">
+            <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
+              {adminName}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item as={Link} to="/admin/profile">Profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/admin/settings">Settings</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Navbar.Collapse>
       </Container>
     </Navbar>
